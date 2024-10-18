@@ -37,7 +37,7 @@ jobs:
       with:
         registry: streamlitistat.azurecr.io/
         username: streamlitistat
-        password: ${{ secrets.streamlitistat_password }}
+        password: ${{ secrets.STREAMLITISTAT_PASSWORD }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v2
