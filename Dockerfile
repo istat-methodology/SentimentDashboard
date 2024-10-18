@@ -1,5 +1,8 @@
 FROM python:3.8.20-slim
 
+ARG DOCKER_TAG
+ENV APP_VERSION=$DOCKER_TAG
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
