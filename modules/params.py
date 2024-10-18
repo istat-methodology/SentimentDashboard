@@ -2,7 +2,7 @@ from datetime import date
 import os
 
 PAGE_CONFIGS = {
-    'TITLE': f'Dashboard (V.{os.getenv('APP_VERSION')})',
+    'TITLE': f'Dashboard (V.{os.getenv("APP_VERSION")})',
     'LAYOUT': 'wide',
     'SIDEBAR': 'expanded'
 }
