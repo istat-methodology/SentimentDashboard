@@ -1,0 +1,46 @@
+name: Sentiment Dashboard Update CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    #environment:  
+    #  name: production
+
+    steps:
+    - uses: actions/checkout@v3
+
+      #- name: Azure Login
+      #  uses: Azure/login@v1.4.3
+      #  with:
+      #    client-id: ${{ secrets.AZ_CLIENT_ID }}
+      #    tenant-id: ${{ secrets.AZ_TENANT_ID }}
+      #    subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+       
+    - name: Log in to registry
+      uses: docker/login-action@v1
+      with:
+        registry: streamlitistat.azurecr.io/
+        username: streamlitistat
+        password: ${{ secrets.streamlitistat_password }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v2
+      with:
+       push: true
+       tags: streamlitistat.azurecr.io/sentiment-dashboard:1.0.${{ github.run_number }},streamlitistat.azurecr.io/sentiment-dashboard:latest
+       context: .
+       build-args: "DOCKER_TAG=1.0.${{ github.run_number }}"
