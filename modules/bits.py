@@ -21,13 +21,18 @@ def global_filters():
     with col2:
         st.date_input('A', min_value=st.session_state['start_date'], max_value=params.GLOBAL_FILTERS['max_end_date'], key='end_date')
     with col3:
-        st.selectbox('Gruppo semantico', options=params.SEMANTIC_GROUPS.keys(), key='semantic_group_tmp')
+        st.selectbox(
+            'Gruppo semantico',
+            options=params.SEMANTIC_GROUPS['GROUPS'].keys(),
+            key='semantic_group_tmp',
+            help=params.SEMANTIC_GROUPS['HELPER']
+        )
 
     def update_data():
         st.session_state['daily_stats'] = st.session_state['full_df'].filter_data(
             start_date=st.session_state['start_date'],
             end_date=st.session_state['end_date'],
-            word_filter=params.SEMANTIC_GROUPS[st.session_state['semantic_group_tmp']]
+            word_filter=params.SEMANTIC_GROUPS['GROUPS'][st.session_state['semantic_group_tmp']]
         )
         if st.session_state['semantic_group_tmp'] == '-':
             st.session_state['disable_comparison'] = True
