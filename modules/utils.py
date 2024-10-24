@@ -40,7 +40,10 @@ class Corpus():
 
         if word_filter:
             filtered_df = self._apply_word_filter(filtered_df, word_filter)
+            filtered_word_full_df = self._apply_word_filter(self.df, word_filter)
         self.filtered_df = filtered_df
+
+        daily_stats['word_filtered_full'] = self._get_daily_stats(filtered_word_full_df) if word_filter else self._get_daily_stats(filtered_df)
 
         daily_stats['word_filtered'] = self._get_daily_stats(filtered_df)
         self.daily_stats = daily_stats

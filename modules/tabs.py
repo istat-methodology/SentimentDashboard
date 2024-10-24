@@ -15,13 +15,16 @@ class OverviewTab():
                 label=params.VOLUME_PLOT['SELECT_BOX']['LABEL'],
                 options=params.VOLUME_PLOT['SELECT_BOX']['OPTIONS'].keys(),
                 disabled=st.session_state['disable_comparison'],
-                key=params.VOLUME_PLOT['SELECT_BOX']['KEY']
+                key=params.VOLUME_PLOT['SELECT_BOX']['KEY'],
+                help=params.VOLUME_PLOT['SELECT_BOX']['HELPER']
             )
         with col2:
             st.toggle(
                 label=params.VOLUME_PLOT['TOGGLE']['LABEL'],
                 disabled=st.session_state['disable_comparison'],
-                key=params.VOLUME_PLOT['TOGGLE']['KEY']
+                key=params.VOLUME_PLOT['TOGGLE']['KEY'],
+                value=params.VOLUME_PLOT['TOGGLE']['VALUE'],
+                help=params.VOLUME_PLOT['TOGGLE']['HELPER']
             )
         
         if params.VOLUME_PLOT['SELECT_BOX']['OPTIONS'][st.session_state[params.VOLUME_PLOT['SELECT_BOX']['KEY']]] == 'absolute_values':
@@ -47,14 +50,17 @@ class OverviewTab():
                 label=params.SENTIMENT_PLOT['SELECT_BOX']['LABEL'],
                 options=params.SENTIMENT_PLOT['SELECT_BOX']['OPTIONS'].keys(),
                 disabled=False,
-                key=params.SENTIMENT_PLOT['SELECT_BOX']['KEY']
+                key=params.SENTIMENT_PLOT['SELECT_BOX']['KEY'],
+                help=params.SENTIMENT_PLOT['SELECT_BOX']['HELPER']
             )
             window = params.SENTIMENT_PLOT['SELECT_BOX']['OPTIONS'][st.session_state[params.SENTIMENT_PLOT['SELECT_BOX']['KEY']]]
         with col2:
             st.toggle(
                 label=params.SENTIMENT_PLOT['TOGGLE']['LABEL'],
                 disabled=st.session_state['disable_comparison'],
-                key=params.SENTIMENT_PLOT['TOGGLE']['KEY']
+                key=params.SENTIMENT_PLOT['TOGGLE']['KEY'],
+                value=params.SENTIMENT_PLOT['TOGGLE']['VALUE'],
+                help=params.SENTIMENT_PLOT['TOGGLE']['HELPER']
             )
         chart_data = {}
         chart_data['Date'] = st.session_state['daily_stats']['word_filtered']['DATE']
@@ -81,14 +87,17 @@ class OverviewTab():
                 label=params.QUALITATIVE_PLOT['SELECT_BOX']['LABEL'],
                 options=params.QUALITATIVE_PLOT['SELECT_BOX']['OPTIONS'].keys(),
                 disabled=False,
-                key=params.QUALITATIVE_PLOT['SELECT_BOX']['KEY']
+                key=params.QUALITATIVE_PLOT['SELECT_BOX']['KEY'],
+                help=params.QUALITATIVE_PLOT['SELECT_BOX']['HELPER']
             )
             window = params.QUALITATIVE_PLOT['SELECT_BOX']['OPTIONS'][st.session_state[params.QUALITATIVE_PLOT['SELECT_BOX']['KEY']]]
         with col2:
             st.toggle(
                 label=params.QUALITATIVE_PLOT['TOGGLE']['LABEL'],
                 disabled=st.session_state['disable_comparison'],
-                key=params.QUALITATIVE_PLOT['TOGGLE']['KEY']
+                key=params.QUALITATIVE_PLOT['TOGGLE']['KEY'],
+                value=params.QUALITATIVE_PLOT['TOGGLE']['VALUE'],
+                help=params.QUALITATIVE_PLOT['TOGGLE']['HELPER']
             )
         chart_data = {}
         chart_data['Date'] = st.session_state['daily_stats']['word_filtered']['DATE']
@@ -112,17 +121,17 @@ class OverviewTab():
 
         with counts:
             if st.session_state['data_ready']:
-                st.subheader('Volumi')
+                st.subheader('Volumi', help=params.VOLUME_PLOT['HELPER'])
                 self._plot_volumes()
         
         with quant:
             if st.session_state['data_ready']:
-                st.subheader('Sentiment Quantitativo')
+                st.subheader('Sentiment Quantitativo', help=params.SENTIMENT_PLOT['HELPER'])
                 self._plot_quantitative()
         
         with qual:
             if st.session_state['data_ready']:
-                st.subheader('Sentiment Qualitativo')
+                st.subheader('Sentiment Qualitativo', help=params.QUALITATIVE_PLOT['HELPER'])
                 self._plot_qualitative()
                 
 
@@ -136,20 +145,22 @@ class FrequencyTab():
             st.selectbox(
                 label=params.WORD_FREQ_PLOT['SELECT_BOX']['LABEL'],
                 options=params.SENTIMENT_CLASSES.keys(),
-                key=params.WORD_FREQ_PLOT['SELECT_BOX']['KEY']
+                key=params.WORD_FREQ_PLOT['SELECT_BOX']['KEY'],
+                help=params.WORD_FREQ_PLOT['SELECT_BOX']['HELPER']
             )
         with col2:
             st.toggle(
                 params.WORD_FREQ_PLOT['TOGGLE']['LABEL'],
                 value=True,
                 disabled=st.session_state['disable_comparison'],
-                key=params.WORD_FREQ_PLOT['TOGGLE']['KEY']
+                key=params.WORD_FREQ_PLOT['TOGGLE']['KEY'],
+                help=params.WORD_FREQ_PLOT['TOGGLE']['HELPER'],
             )
         chart_data = st.session_state['full_df'].extract_top_words(class_filter=st.session_state[params.WORD_FREQ_PLOT['SELECT_BOX']['KEY']], top_n=100)
         
         if st.session_state[params.WORD_FREQ_PLOT['TOGGLE']['KEY']] and st.session_state['semantic_group'] != '-':
             chart_data = chart_data.filter(
-                ~pl.col('word').str.contains(params.SEMANTIC_GROUPS[st.session_state['semantic_group']],literal=True)
+                ~pl.col('word').str.contains(params.SEMANTIC_GROUPS['GROUPS'][st.session_state['semantic_group']],literal=True)
             )
 
         st.bar_chart(
@@ -163,7 +174,12 @@ class FrequencyTab():
         )
     
     def _plot_classes(self):
-        st.toggle(params.SENTIMENT_CLASS_TS['TOGGLE']['LABEL'], value=params.SENTIMENT_CLASS_TS['TOGGLE']['VALUE'], key=params.SENTIMENT_CLASS_TS['TOGGLE']['KEY'])
+        st.toggle(
+            params.SENTIMENT_CLASS_TS['TOGGLE']['LABEL'],
+            value=params.SENTIMENT_CLASS_TS['TOGGLE']['VALUE'],
+            key=params.SENTIMENT_CLASS_TS['TOGGLE']['KEY'],
+            help=params.SENTIMENT_CLASS_TS['TOGGLE']['HELPER']
+        )
         
         chart_data = st.session_state['full_df'].extract_classes_ts(
             normalize=st.session_state[params.SENTIMENT_CLASS_TS['TOGGLE']['KEY']],
@@ -205,12 +221,12 @@ class FrequencyTab():
 
         with freqs:
             if st.session_state['data_ready']:
-                st.subheader("Frequenze Parole")
+                st.subheader("Frequenze Parole", help=params.WORD_FREQ_PLOT['HELPER'])
                 self._plot_word_freqs()
         
         with bars:
             if st.session_state['data_ready']:
-                st.subheader("Frequenze Sentiment")
+                st.subheader("Frequenze Sentiment", help=params.SENTIMENT_CLASS_TS['HELPER'])
                 self._plot_classes()
 
 class Sidebar():
@@ -220,20 +236,46 @@ class Sidebar():
 
     def add(self):
         st.subheader('Info')
+        st.metric("Gruppo semantico selezionato", value=st.session_state['semantic_group'])
         st.selectbox(
             label=params.SIDEBAR['SELECT_BOX']['LABEL'],
             options=params.SIDEBAR['SELECT_BOX']['OPTIONS'],
             key=params.SIDEBAR['SELECT_BOX']['KEY'],
-            disabled=not st.session_state['data_ready']
+            disabled=not st.session_state['data_ready'],
+            help=params.SIDEBAR['SELECT_BOX']['HELPER']
         )
         if st.session_state['data_ready']:
             if st.session_state['comparison_term'] == 'Totale periodo (stesso gruppo)':
-                volume_comparison = int(st.session_state['daily_stats']['full']['Count'].mean())
-                sentiment_comparison = st.session_state['daily_stats']['full']['Sentiment'].mean()
+                volume_comparison = int(st.session_state['daily_stats']['word_filtered_full']['Count'].mean())
+                sentiment_comparison = st.session_state['daily_stats']['word_filtered_full']['Sentiment'].mean()
+                delta_num_volume = round((int(st.session_state['daily_stats']['word_filtered']['Count'].mean()) - volume_comparison)*100 / volume_comparison, 2)
+                delta_sign_volume = '+' if delta_num_volume >= 0 else ''
+                delta_volume = f"{delta_sign_volume}{delta_num_volume}%"
+                delta_color_volume = "normal"
+
+                delta_num_sentiment = round((st.session_state['daily_stats']['date_filtered']['Sentiment'].mean() - sentiment_comparison)*100 / sentiment_comparison, 2)
+                delta_sign_sentiment = '+' if delta_num_sentiment >= 0 else ''
+                delta_sentiment = f"{delta_sign_sentiment}{delta_num_sentiment}%"
 
             elif st.session_state['comparison_term'] == 'Totale gruppi (stesso periodo)':
                 volume_comparison = int(st.session_state['daily_stats']['date_filtered']['Count'].mean())
                 sentiment_comparison = st.session_state['daily_stats']['date_filtered']['Sentiment'].mean()
+                delta_volume = f"{round(st.session_state['daily_stats']['word_filtered']['Count'].mean()*100 / volume_comparison, 2)}% dei Tweet"
+                delta_color_volume = "off"
+                delta_num_sentiment = -round((st.session_state['daily_stats']['word_filtered']['Sentiment'].mean() - sentiment_comparison)*100 / sentiment_comparison, 2)
+                delta_sign_sentiment = '+' if delta_num_sentiment >= 0 else ''
+                delta_sentiment = f"{delta_sign_sentiment}{delta_num_sentiment}%"
+            
+            st.write(
+                """
+                <style>
+                [data-testid="stMetricDelta"] svg {
+                    display: none;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
             
             if st.session_state['semantic_group'] == '-':
                 st.metric("Volume giornaliero medio", int(st.session_state['daily_stats']['word_filtered']['Count'].mean()))
@@ -242,10 +284,11 @@ class Sidebar():
                 st.metric(
                     f"Volume giornaliero medio ({st.session_state['semantic_group']})",
                     int(st.session_state['daily_stats']['word_filtered']['Count'].mean()),
-                    delta=int(st.session_state['daily_stats']['word_filtered']['Count'].mean()) - volume_comparison
+                    delta=delta_volume,
+                    delta_color=delta_color_volume
                 )
                 st.metric(
                     f"Sentiment quantitativo medio ({st.session_state['semantic_group']})",
                     round(st.session_state['daily_stats']['word_filtered']['Sentiment'].mean(), 4),
-                    delta=round(st.session_state['daily_stats']['word_filtered']['Sentiment'].mean() - sentiment_comparison, 4)
+                    delta=delta_sentiment
                 )
