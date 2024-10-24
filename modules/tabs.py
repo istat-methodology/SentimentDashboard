@@ -50,7 +50,8 @@ class OverviewTab():
                 label=params.SENTIMENT_PLOT['SELECT_BOX']['LABEL'],
                 options=params.SENTIMENT_PLOT['SELECT_BOX']['OPTIONS'].keys(),
                 disabled=False,
-                key=params.SENTIMENT_PLOT['SELECT_BOX']['KEY']
+                key=params.SENTIMENT_PLOT['SELECT_BOX']['KEY'],
+                help=params.SENTIMENT_PLOT['SELECT_BOX']['HELPER']
             )
             window = params.SENTIMENT_PLOT['SELECT_BOX']['OPTIONS'][st.session_state[params.SENTIMENT_PLOT['SELECT_BOX']['KEY']]]
         with col2:
@@ -86,7 +87,8 @@ class OverviewTab():
                 label=params.QUALITATIVE_PLOT['SELECT_BOX']['LABEL'],
                 options=params.QUALITATIVE_PLOT['SELECT_BOX']['OPTIONS'].keys(),
                 disabled=False,
-                key=params.QUALITATIVE_PLOT['SELECT_BOX']['KEY']
+                key=params.QUALITATIVE_PLOT['SELECT_BOX']['KEY'],
+                help=params.QUALITATIVE_PLOT['SELECT_BOX']['HELPER']
             )
             window = params.QUALITATIVE_PLOT['SELECT_BOX']['OPTIONS'][st.session_state[params.QUALITATIVE_PLOT['SELECT_BOX']['KEY']]]
         with col2:
@@ -234,6 +236,7 @@ class Sidebar():
 
     def add(self):
         st.subheader('Info')
+        st.metric("Gruppo semantico selezionato", value=st.session_state['semantic_group'])
         st.selectbox(
             label=params.SIDEBAR['SELECT_BOX']['LABEL'],
             options=params.SIDEBAR['SELECT_BOX']['OPTIONS'],
@@ -243,12 +246,36 @@ class Sidebar():
         )
         if st.session_state['data_ready']:
             if st.session_state['comparison_term'] == 'Totale periodo (stesso gruppo)':
-                volume_comparison = int(st.session_state['daily_stats']['full']['Count'].mean())
-                sentiment_comparison = st.session_state['daily_stats']['full']['Sentiment'].mean()
+                volume_comparison = int(st.session_state['daily_stats']['word_filtered_full']['Count'].mean())
+                sentiment_comparison = st.session_state['daily_stats']['word_filtered_full']['Sentiment'].mean()
+                delta_num_volume = round((int(st.session_state['daily_stats']['word_filtered']['Count'].mean()) - volume_comparison)*100 / volume_comparison, 2)
+                delta_sign_volume = '+' if delta_num_volume >= 0 else ''
+                delta_volume = f"{delta_sign_volume}{delta_num_volume}%"
+                delta_color_volume = "normal"
+
+                delta_num_sentiment = round((st.session_state['daily_stats']['date_filtered']['Sentiment'].mean() - sentiment_comparison)*100 / sentiment_comparison, 2)
+                delta_sign_sentiment = '+' if delta_num_sentiment >= 0 else ''
+                delta_sentiment = f"{delta_sign_sentiment}{delta_num_sentiment}%"
 
             elif st.session_state['comparison_term'] == 'Totale gruppi (stesso periodo)':
                 volume_comparison = int(st.session_state['daily_stats']['date_filtered']['Count'].mean())
                 sentiment_comparison = st.session_state['daily_stats']['date_filtered']['Sentiment'].mean()
+                delta_volume = f"{round(st.session_state['daily_stats']['word_filtered']['Count'].mean()*100 / volume_comparison, 2)}% dei Tweet"
+                delta_color_volume = "off"
+                delta_num_sentiment = -round((st.session_state['daily_stats']['word_filtered']['Sentiment'].mean() - sentiment_comparison)*100 / sentiment_comparison, 2)
+                delta_sign_sentiment = '+' if delta_num_sentiment >= 0 else ''
+                delta_sentiment = f"{delta_sign_sentiment}{delta_num_sentiment}%"
+            
+            st.write(
+                """
+                <style>
+                [data-testid="stMetricDelta"] svg {
+                    display: none;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
             
             if st.session_state['semantic_group'] == '-':
                 st.metric("Volume giornaliero medio", int(st.session_state['daily_stats']['word_filtered']['Count'].mean()))
@@ -257,10 +284,11 @@ class Sidebar():
                 st.metric(
                     f"Volume giornaliero medio ({st.session_state['semantic_group']})",
                     int(st.session_state['daily_stats']['word_filtered']['Count'].mean()),
-                    delta=int(st.session_state['daily_stats']['word_filtered']['Count'].mean()) - volume_comparison
+                    delta=delta_volume,
+                    delta_color=delta_color_volume
                 )
                 st.metric(
                     f"Sentiment quantitativo medio ({st.session_state['semantic_group']})",
                     round(st.session_state['daily_stats']['word_filtered']['Sentiment'].mean(), 4),
-                    delta=round(st.session_state['daily_stats']['word_filtered']['Sentiment'].mean() - sentiment_comparison, 4)
+                    delta=delta_sentiment
                 )

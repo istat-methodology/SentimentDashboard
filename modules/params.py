@@ -2,14 +2,14 @@ from datetime import date
 import os
 
 PAGE_CONFIGS = {
-    'TITLE': f'Dashboard (V.{os.getenv("APP_VERSION")})',
+    'TITLE': f'Dashboard (v{os.getenv("APP_VERSION")})',
     'LAYOUT': 'wide',
     'SIDEBAR': 'expanded'
 }
 
 HEADER = {
     'TITLE': 'Dashboard Demo',
-    'SUBTITLE': 'Statistica sperimentale: dashboard per il monitoraggio del sentiment social (X) verso i migranti.'
+    'SUBTITLE': "Dashboard per l'analisi delle opinioni espresse su X in tema di immigrazione."
 }
 
 GLOBAL_FILTERS = {
@@ -110,7 +110,8 @@ SENTIMENT_PLOT = {
     'SELECT_BOX': {
         'LABEL': 'Media mobile',
         'OPTIONS': ROLLING_MEAN,
-        'KEY': 'ma_sentiment'
+        'KEY': 'ma_sentiment',
+        'HELPER': """La media mobile è una tecnica utilizzata per analizzare i dati temporali, smussando le fluttuazioni a breve termine. Una media mobile centrata a 7 giorni prende in considerazione i 3 giorni precedenti, il giorno corrente e i 3 giorni successivi, fornendo un valore medio per smussare le oscillazioni giornaliere e le stagionalità. Una media mobile centrata a 30 giorni funziona allo stesso modo, ma su un arco di 30 giorni, utile per identificare tendenze a lungo termine."""
     },
     'TOGGLE': {
         'LABEL': 'Aggiungi totale',
@@ -129,7 +130,8 @@ QUALITATIVE_PLOT = {
     'SELECT_BOX': {
         'LABEL': 'Media mobile',
         'OPTIONS': ROLLING_MEAN,
-        'KEY': 'ma_qualitative'
+        'KEY': 'ma_qualitative',
+        'HELPER': """La media mobile è una tecnica utilizzata per analizzare i dati temporali, smussando le fluttuazioni a breve termine. Una media mobile centrata a 7 giorni prende in considerazione i 3 giorni precedenti, il giorno corrente e i 3 giorni successivi, fornendo un valore medio per smussare le oscillazioni giornaliere e le stagionalità. Una media mobile centrata a 30 giorni funziona allo stesso modo, ma su un arco di 30 giorni, utile per identificare tendenze a lungo termine."""
     },
     'TOGGLE': {
         'LABEL': 'Aggiungi totale',
