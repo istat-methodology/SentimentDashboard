@@ -72,6 +72,13 @@ SENTIMENT_CLASSES = {
     'Molto Negativi': '#780000'
 }
 
+SENTIMENT_THRESHOLDS = {
+    't1': -0.1,
+    't2': -0.01,
+    't3': 0.01,
+    't4': 0.1
+}
+
 SENTIMENT_CLASSES_MAP = {
     'Strongly Positive': 'Molto Positivi',
     'Positive': 'Positivi',
