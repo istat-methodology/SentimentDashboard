@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit_nested_layout
 from modules import bits, tabs, params
 
 bits.set_configs()
@@ -16,7 +17,5 @@ if st.session_state['data_ready']:
     with frequency_tab:
         tabs.FrequencyTab().add()
     
-    with st.sidebar:
-        tabs.Sidebar().add()
 else:
     st.warning(params.WARNINGS['no_data'])

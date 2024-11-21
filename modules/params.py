@@ -190,3 +190,7 @@ SENTIMENT_CLASS_TS = {
     },
     'HELPER': """Questa visualizzazione mostra la ripartizione giornaliera tra Tweet classificati come 'Molto Positivi', 'Positivi', 'Neutri', 'Negativi' e 'Molto Negativi'."""
 }
+
+SENTIMENT_CLASS_PIE = {
+    'HELPER': """Questa visualizzazione mostra la ripartizione trimestrale tra Tweet classificati come 'Molto Positivi', 'Positivi', 'Neutri', 'Negativi' e 'Molto Negativi'."""
+}

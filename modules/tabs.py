@@ -85,14 +85,24 @@ class OverviewTab():
         counts, quant = st.columns(2)
 
         with counts:
+            graph, stats = st.columns([4, 1])
             if st.session_state['data_ready']:
-                st.subheader('Volumi', help=params.VOLUME_PLOT['HELPER'])
-                self._plot_volumes()
+                with graph:
+                    st.subheader('Volumi', help=params.VOLUME_PLOT['HELPER'])
+                    self._plot_volumes()
+                with stats:
+                    avg_volume = st.session_state['daily_stats']['word_filtered']['Count'].mean()
+                    st.metric('Volume medio', int(avg_volume))
         
         with quant:
+            graph, stats = st.columns([4, 1])
             if st.session_state['data_ready']:
-                st.subheader('Sentiment Quantitativo', help=params.SENTIMENT_PLOT['HELPER'])
-                self._plot_quantitative()
+                with graph:
+                    st.subheader('Sentiment Quantitativo', help=params.SENTIMENT_PLOT['HELPER'])
+                    self._plot_quantitative()
+                with stats:
+                    avg_sentiment_quant = st.session_state['daily_stats']['word_filtered']['Sentiment'].mean()
+                    st.metric('Sentiment medio', round(avg_sentiment_quant, 4))
                 
 
 class FrequencyTab():
@@ -137,9 +147,14 @@ class FrequencyTab():
 
     def _plot_word_freqs(self):
         col1, col2 = st.columns(2)
+        if st.session_state['semantic_group'] == '-':
+            disable_classes = False
+        else:
+            disable_classes = True
         with col1:
             st.selectbox(
                 label=params.WORD_FREQ_PLOT['SELECT_BOX']['LABEL'],
+                disabled=disable_classes,
                 options=params.SENTIMENT_CLASSES.keys(),
                 key=params.WORD_FREQ_PLOT['SELECT_BOX']['KEY'],
                 help=params.WORD_FREQ_PLOT['SELECT_BOX']['HELPER']
@@ -211,14 +226,49 @@ class FrequencyTab():
             )
         )
         st.plotly_chart(fig)
+    
+    def _plot_classes_pie(self):
+        chart_data = st.session_state['full_df'].extract_classes_ts(
+            normalize=st.session_state[params.SENTIMENT_CLASS_TS['TOGGLE']['KEY']],
+            classes_columns=params.SENTIMENT_CLASSES_MAP.keys()
+        ).drop('DATE').to_pandas().mean()
+
+        colors = [params.SENTIMENT_CLASSES[label] for label in chart_data.index]
+
+        fig = go.Figure(
+            data=[go.Pie(
+                labels=chart_data.index,
+                values=chart_data.values, 
+                hoverinfo='label+percent', 
+                textinfo='percent',
+                marker=dict(colors=colors)
+            )]
+        )
+        fig.update_layout(
+            template='plotly_dark',
+            bargap=0.0,
+            bargroupgap=0.0,
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=120
+            ),
+        )
+        st.plotly_chart(fig)
         
     def add(self):
         qual, bars = st.columns(2)
 
         with qual:
+            graph, stats = st.columns([4, 1])
             if st.session_state['data_ready']:
-                st.subheader('Sentiment Qualitativo', help=params.QUALITATIVE_PLOT['HELPER'])
-                self._plot_qualitative()
+                with graph:
+                    st.subheader('Sentiment Qualitativo', help=params.QUALITATIVE_PLOT['HELPER'])
+                    self._plot_qualitative()
+                with stats:
+                    avg_sentiment_qual = st.session_state['daily_stats']['word_filtered']['Qualitative Index'].mean()
+                    st.metric('Indice medio', round(avg_sentiment_qual, 3))
 
         
         with bars:
@@ -226,12 +276,17 @@ class FrequencyTab():
                 st.subheader("Frequenze Sentiment", help=params.SENTIMENT_CLASS_TS['HELPER'])
                 self._plot_classes()
 
-        freqs, _ = st.columns(2)
-        
+        freqs, _, pie, _ = st.columns([2, 1, 2, 1])
+
         with freqs:
             if st.session_state['data_ready']:
                 st.subheader("Frequenze Parole", help=params.WORD_FREQ_PLOT['HELPER'])
                 self._plot_word_freqs()
+        
+        with pie:
+            if st.session_state['data_ready']:
+                st.subheader("Frequenze Sentiment Medie", help=params.SENTIMENT_CLASS_PIE['HELPER'])
+                self._plot_classes_pie()
 
 
 class Sidebar():
