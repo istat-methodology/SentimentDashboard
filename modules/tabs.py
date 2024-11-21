@@ -80,6 +80,25 @@ class OverviewTab():
 
         st.line_chart(chart_data, x='Date', color=colors, x_label='Data', y_label='Score')
     
+
+    def add(self):
+        counts, quant = st.columns(2)
+
+        with counts:
+            if st.session_state['data_ready']:
+                st.subheader('Volumi', help=params.VOLUME_PLOT['HELPER'])
+                self._plot_volumes()
+        
+        with quant:
+            if st.session_state['data_ready']:
+                st.subheader('Sentiment Quantitativo', help=params.SENTIMENT_PLOT['HELPER'])
+                self._plot_quantitative()
+                
+
+class FrequencyTab():
+    def __init__(self):
+        pass
+
     def _plot_qualitative(self):
         col1, col2 = st.columns(2)
         with col1:
@@ -115,29 +134,6 @@ class OverviewTab():
             colors.append(params.QUALITATIVE_PLOT['COLOR']['B'])
 
         st.line_chart(chart_data, x='Date', color=colors, x_label='Data', y_label='Score')
-
-    def add(self):
-        counts, quant, qual = st.columns(3)
-
-        with counts:
-            if st.session_state['data_ready']:
-                st.subheader('Volumi', help=params.VOLUME_PLOT['HELPER'])
-                self._plot_volumes()
-        
-        with quant:
-            if st.session_state['data_ready']:
-                st.subheader('Sentiment Quantitativo', help=params.SENTIMENT_PLOT['HELPER'])
-                self._plot_quantitative()
-        
-        with qual:
-            if st.session_state['data_ready']:
-                st.subheader('Sentiment Qualitativo', help=params.QUALITATIVE_PLOT['HELPER'])
-                self._plot_qualitative()
-                
-
-class FrequencyTab():
-    def __init__(self):
-        pass
 
     def _plot_word_freqs(self):
         col1, col2 = st.columns(2)
@@ -217,17 +213,26 @@ class FrequencyTab():
         st.plotly_chart(fig)
         
     def add(self):
-        freqs, bars = st.columns([1,2])
+        qual, bars = st.columns(2)
 
-        with freqs:
+        with qual:
             if st.session_state['data_ready']:
-                st.subheader("Frequenze Parole", help=params.WORD_FREQ_PLOT['HELPER'])
-                self._plot_word_freqs()
+                st.subheader('Sentiment Qualitativo', help=params.QUALITATIVE_PLOT['HELPER'])
+                self._plot_qualitative()
+
         
         with bars:
             if st.session_state['data_ready']:
                 st.subheader("Frequenze Sentiment", help=params.SENTIMENT_CLASS_TS['HELPER'])
                 self._plot_classes()
+
+        freqs, _ = st.columns(2)
+        
+        with freqs:
+            if st.session_state['data_ready']:
+                st.subheader("Frequenze Parole", help=params.WORD_FREQ_PLOT['HELPER'])
+                self._plot_word_freqs()
+
 
 class Sidebar():
 

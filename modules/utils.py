@@ -1,8 +1,14 @@
 import polars as pl
 import datetime
+from datequarter import DateQuarter
 from typing import Tuple, List
 from modules import params
 
+def get_date(year: int, quarter: str, mapping: dict):
+    quarter_int = mapping[quarter]
+    year_int = int(year)
+    return DateQuarter(year_int, quarter_int)
+        
 class Corpus():
     """
     A class to represent and analyze a corpus of text data with sentiment information.

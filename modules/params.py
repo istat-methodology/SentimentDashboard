@@ -12,11 +12,24 @@ HEADER = {
     'SUBTITLE': "Dashboard per l'analisi delle opinioni espresse su X in tema di immigrazione."
 }
 
-GLOBAL_FILTERS = {
-    'default_start_date': date(2020, 2, 1),
-    'min_start_date': date(2020, 1, 1),
-    'max_end_date': date(2020, 12, 31),
-    'default_semantic_group': '-'
+YEAR_FILTER = {
+    'YEAR': [2020],
+    'KEY': 'year_filter',
+    'HELPER': 'Seleziona un anno dalla lista per filtrare i dati.'
+}
+
+QUARTER_FILTER = {
+    'QUARTER': {
+        2020: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4']
+    },
+    'MAPPING': {
+        'Trimestre 1': 1,
+        'Trimestre 2': 2,
+        'Trimestre 3': 3,
+        'Trimestre 4': 4
+    },
+    'KEY': 'quarter_filter',
+    'HELPER': 'Seleziona un trimestre dalla lista per filtrare i dati.'
 }
 
 WARNINGS = {
@@ -43,12 +56,9 @@ SESSION_STATES = {
 SEMANTIC_GROUPS = {
     'GROUPS': {
         '-': None,
-        'Migranti': 'migrant',
         'Immigrati': 'immigra',
-        'Clandestini': 'clandestin',
         'Stranieri': 'stranier',
-        'Cinesi': 'cines',
-        'Italiani': 'italian'
+        'Clandestini': 'clandestin'
     },
     'HELPER': """Questa selezione permette di filtrare i Tweet che contengono parole relative a uno specifico gruppo semantico. Ad esempio, se si seleziona 'Stranieri', si otterranno tutti i Tweet contenenti le parole 'straniera', 'straniero', 'straniere', 'stranieri'."""
 }

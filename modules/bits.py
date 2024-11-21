@@ -1,4 +1,5 @@
 import streamlit as st
+from modules import utils
 from modules.utils import Corpus
 from modules import params
 
@@ -14,24 +15,36 @@ def set_header():
     st.title(params.HEADER['TITLE'])
     st.markdown(params.HEADER['SUBTITLE'])
 
-def global_filters():
-    col1, col2, col3, _ = st.columns([1, 1, 2, 4])
-    with col1:
-        st.date_input('Da', params.GLOBAL_FILTERS['default_start_date'], min_value=params.GLOBAL_FILTERS['min_start_date'], max_value=st.session_state['end_date'], key='start_date')
-    with col2:
-        st.date_input('A', min_value=st.session_state['start_date'], max_value=params.GLOBAL_FILTERS['max_end_date'], key='end_date')
-    with col3:
+def global_filters():  
+    year, quarter, group, _ = st.columns([1, 1, 2, 4])
+    with year:
         st.selectbox(
-            'Gruppo semantico',
+            'Seleziona Anno',
+            options=params.YEAR_FILTER['YEAR'],
+            key=params.YEAR_FILTER['KEY'],
+            help=params.YEAR_FILTER['HELPER']
+        )
+    with quarter:
+        st.selectbox(
+            'Seleziona Trimestre',
+            options=params.QUARTER_FILTER['QUARTER'][st.session_state[params.YEAR_FILTER['KEY']]],
+            key=params.QUARTER_FILTER['KEY'],
+            help=params.QUARTER_FILTER['HELPER']
+        )
+    with group:
+        st.selectbox(
+            'Seleziona gruppo semantico',
             options=params.SEMANTIC_GROUPS['GROUPS'].keys(),
             key='semantic_group_tmp',
             help=params.SEMANTIC_GROUPS['HELPER']
         )
+    
+    date_filter = utils.get_date(st.session_state[params.YEAR_FILTER['KEY']], st.session_state[params.QUARTER_FILTER['KEY']], params.QUARTER_FILTER['MAPPING'])
 
     def update_data():
         st.session_state['daily_stats'] = st.session_state['full_df'].filter_data(
-            start_date=st.session_state['start_date'],
-            end_date=st.session_state['end_date'],
+            start_date=date_filter.start_date(),
+            end_date=date_filter.end_date(),
             word_filter=params.SEMANTIC_GROUPS['GROUPS'][st.session_state['semantic_group_tmp']]
         )
         if st.session_state['semantic_group_tmp'] == '-':
