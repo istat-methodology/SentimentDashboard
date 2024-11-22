@@ -36,6 +36,10 @@ WARNINGS = {
     'no_data': 'Per favore, applica un filtro per iniziare a visualizzare i dati.'
 }
 
+PATHS = {
+    'JSON_PATH': 'data/dashboard_data.json'
+}
+
 LOADING_PARAMS = {
     'data_path': 'data/demo_2020.csv',
     'date_column': 'DATE',
