@@ -105,20 +105,25 @@ class BatchProcessing():
                 classes = list(df['SENTIMENT_CLASS'].unique()) + ['Total']
             else:
                 classes = ['Total']
+            
+            for quarter in df["QUARTER"].unique():
+                self.word_freqs[group][quarter] = {}
+                quarter_df = df.filter(pl.col("QUARTER") == quarter)
 
-            for sent_class in classes:
-                self.word_freqs[group][sent_class] = {}
-
-                for quarter in df["QUARTER"].unique():
+                for sent_class in classes:
                     logging.info(f'[WORD FREQUENCY] Processing "{sent_class} | {quarter}" for group "{group}"...')
-                    self.word_freqs[group][sent_class][quarter] = {}
-                    quarter_df = df.filter(pl.col("QUARTER") == quarter)
-
+                    self.word_freqs[group][quarter][sent_class] = {}
+                    
+                    if sent_class != 'Total':
+                        sent_df = quarter_df.filter(pl.col("SENTIMENT_CLASS") == sent_class)
+                    else:
+                        sent_df = quarter_df
+                    
                     # explode the word_list column
-                    quarter_df = quarter_df.explode("WORD_LIST").rename({"WORD_LIST": "WORD"})
+                    sent_df = sent_df.explode("WORD_LIST").rename({"WORD_LIST": "WORD"})
 
                     # count the word frequencies
-                    word_counts = quarter_df.group_by(['QUARTER', 'WORD']).len().rename({'len': 'FREQUENCY'})
+                    word_counts = sent_df.group_by(['QUARTER', 'WORD']).len().rename({'len': 'FREQUENCY'})
 
                     # extract the top 30 words
                     top_words = (
@@ -130,7 +135,33 @@ class BatchProcessing():
 
                     # create a dictionary where "key" = word, and "value" = count
                     df_temp = top_words.select('WORD', 'FREQUENCY').to_dict(as_series=False)
-                    self.word_freqs[group][sent_class][quarter] = dict(zip(df_temp['WORD'], df_temp['FREQUENCY']))
+                    self.word_freqs[group][quarter][sent_class] = dict(zip(df_temp['WORD'], df_temp['FREQUENCY']))
+
+            #for sent_class in classes:
+            #    self.word_freqs[group][sent_class] = {}
+#
+            #    for quarter in df["QUARTER"].unique():
+            #        logging.info(f'[WORD FREQUENCY] Processing "{sent_class} | {quarter}" for group "{group}"...')
+            #        self.word_freqs[group][sent_class][quarter] = {}
+            #        quarter_df = df.filter(pl.col("QUARTER") == quarter)
+#
+            #        # explode the word_list column
+            #        quarter_df = quarter_df.explode("WORD_LIST").rename({"WORD_LIST": "WORD"})
+#
+            #        # count the word frequencies
+            #        word_counts = quarter_df.group_by(['QUARTER', 'WORD']).len().rename({'len': 'FREQUENCY'})
+#
+            #        # extract the top 30 words
+            #        top_words = (
+            #            word_counts
+            #            .sort(["QUARTER", "FREQUENCY"], descending=[False, True])
+            #            .group_by("QUARTER")
+            #            .head(n_top_words)
+            #        )
+#
+            #        # create a dictionary where "key" = word, and "value" = count
+            #        df_temp = top_words.select('WORD', 'FREQUENCY').to_dict(as_series=False)
+            #        self.word_freqs[group][sent_class][quarter] = dict(zip(df_temp['WORD'], df_temp['FREQUENCY']))
     
     def _export(self, output_dir: str):
         logging.info(f'[EXPORT] Exporting data to \"{output_dir}\"...')
