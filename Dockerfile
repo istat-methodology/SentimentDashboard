@@ -1,4 +1,4 @@
-FROM python:3.8.20-slim
+FROM python:3.10.15-slim
 
 ARG DOCKER_TAG
 ENV APP_VERSION=$DOCKER_TAG
