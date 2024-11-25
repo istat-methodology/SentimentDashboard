@@ -1,3 +1,7 @@
 polars
 streamlit
+streamlit-nested-layout
 plotly
+typing
+typing-extensions==4.12.2
+datetime-quarter

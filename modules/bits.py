@@ -1,9 +1,18 @@
 import streamlit as st
-from modules.utils import Corpus
+from modules.utils import Data
 from modules import params
 
 def set_configs():
     st.set_page_config(page_title=params.PAGE_CONFIGS['TITLE'], layout=params.PAGE_CONFIGS['LAYOUT'], initial_sidebar_state=params.PAGE_CONFIGS['SIDEBAR'])
+
+def load_data():
+    if st.session_state['initialized'] is False:
+        with st.spinner("Caricamento dei dati in corso..."):
+            st.session_state['data'] = Data(
+                path = params.PATHS['JSON_PATH']
+            )
+            st.session_state['initialized'] = True
+            st.toast("Dati caricati con successo!", icon="✅")
 
 def set_session_states():
     for state, default in params.SESSION_STATES.items():
@@ -15,44 +24,46 @@ def set_header():
     st.markdown(params.HEADER['SUBTITLE'])
 
 def global_filters():
-    col1, col2, col3, _ = st.columns([1, 1, 2, 4])
-    with col1:
-        st.date_input('Da', params.GLOBAL_FILTERS['default_start_date'], min_value=params.GLOBAL_FILTERS['min_start_date'], max_value=st.session_state['end_date'], key='start_date')
-    with col2:
-        st.date_input('A', min_value=st.session_state['start_date'], max_value=params.GLOBAL_FILTERS['max_end_date'], key='end_date')
-    with col3:
+    year, quarter, group, _ = st.columns([2, 2, 3, 7])
+    with year:
         st.selectbox(
-            'Gruppo semantico',
+            label = params.YEAR_FILTER['LABEL'],
+            options = params.YEAR_FILTER['YEAR'],
+            key = params.YEAR_FILTER['KEY'],
+            help = params.YEAR_FILTER['HELPER']
+        )
+    with quarter:
+        st.selectbox(
+            label = params.QUARTER_FILTER['LABEL'],
+            options = params.QUARTER_FILTER['QUARTER'][st.session_state[params.YEAR_FILTER['KEY']]],
+            key = params.QUARTER_FILTER['KEY'],
+            help = params.QUARTER_FILTER['HELPER']
+        )
+    with group:
+        st.selectbox(
+            label = params.SEMANTIC_GROUPS['LABEL'],
             options=params.SEMANTIC_GROUPS['GROUPS'].keys(),
-            key='semantic_group_tmp',
+            key=params.SEMANTIC_GROUPS['KEY'],
             help=params.SEMANTIC_GROUPS['HELPER']
         )
 
-    def update_data():
-        st.session_state['daily_stats'] = st.session_state['full_df'].filter_data(
-            start_date=st.session_state['start_date'],
-            end_date=st.session_state['end_date'],
-            word_filter=params.SEMANTIC_GROUPS['GROUPS'][st.session_state['semantic_group_tmp']]
-        )
-        if st.session_state['semantic_group_tmp'] == '-':
-            st.session_state['disable_comparison'] = True
-        else:
-            st.session_state['disable_comparison'] = False
-        st.session_state['data_ready'] = True
-        st.session_state['semantic_group'] = st.session_state['semantic_group_tmp']
+def get_filtered_data():
+    filtered_data = st.session_state['data'].filter_data(
+        year = st.session_state[params.YEAR_FILTER['KEY']],
+        quarter = st.session_state[params.QUARTER_FILTER['KEY']],
+        semantic_group = params.SEMANTIC_GROUPS['GROUPS'][st.session_state[params.SEMANTIC_GROUPS['KEY']]]
+    )
+    benchmark_data = st.session_state['data'].filter_data(
+        year = st.session_state[params.YEAR_FILTER['KEY']],
+        quarter = st.session_state[params.QUARTER_FILTER['KEY']],
+        semantic_group = '-'
+    )
+    if st.session_state['semantic_group'] == '-':
+        st.session_state['disable_comparison'] = True
+    else:
+        st.session_state['disable_comparison'] = False
 
-    st.button("Filtra", on_click=update_data)
-
-def load_data():
-    if st.session_state['initialized'] is False:
-        with st.spinner("Caricamento dei dati in corso..."):
-            st.session_state['full_df'] = Corpus(
-                path=params.LOADING_PARAMS['data_path'],
-                date_column=params.LOADING_PARAMS['date_column'],
-                sentiment_column=params.LOADING_PARAMS['sentiment_column'],
-                class_column=params.LOADING_PARAMS['class_column'],
-                text_column=params.LOADING_PARAMS['text_column']
-            )
-            st.session_state['initialized'] = True
-            st.toast("Dati caricati con successo!", icon="✅")
-
+    st.session_state['filtered_data'] = {
+        'data': filtered_data,
+        'benchmark': benchmark_data
+    }
