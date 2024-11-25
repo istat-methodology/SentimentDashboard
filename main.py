@@ -9,7 +9,7 @@ bits.load_data()
 bits.global_filters()
 bits.get_filtered_data()
 
-overview_tab, frequency_tab, debug = st.tabs(['Overview', 'Frequency Analysis'])
+overview_tab, frequency_tab, debug = st.tabs(['Overview', 'Frequency Analysis', 'Debug'])
 
 with overview_tab:
     col1, col2 = st.columns(2)
@@ -32,4 +32,4 @@ with frequency_tab:
         plots.SentimentPie().add()
 
 with debug:
-    st.json(st.session_state['data'])
+    st.json(st.session_state['data'].data)
