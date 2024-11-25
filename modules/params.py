@@ -1,6 +1,8 @@
 from datetime import date
 import os
 
+# --- INITS ---
+
 PAGE_CONFIGS = {
     'TITLE': f'Dashboard (v{os.getenv("APP_VERSION")})',
     'LAYOUT': 'wide',
@@ -10,26 +12,6 @@ PAGE_CONFIGS = {
 HEADER = {
     'TITLE': 'Dashboard Demo',
     'SUBTITLE': "Dashboard per l'analisi delle opinioni espresse su X in tema di immigrazione."
-}
-
-YEAR_FILTER = {
-    'YEAR': [2020],
-    'KEY': 'year_filter',
-    'HELPER': 'Seleziona un anno dalla lista per filtrare i dati.'
-}
-
-QUARTER_FILTER = {
-    'QUARTER': {
-        2020: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4']
-    },
-    'MAPPING': {
-        'Trimestre 1': 1,
-        'Trimestre 2': 2,
-        'Trimestre 3': 3,
-        'Trimestre 4': 4
-    },
-    'KEY': 'quarter_filter',
-    'HELPER': 'Seleziona un trimestre dalla lista per filtrare i dati.'
 }
 
 WARNINGS = {
@@ -57,15 +39,47 @@ SESSION_STATES = {
     'data_ready': False
 }
 
+# --- GLOBAL FILTERS ---
+
+YEAR_FILTER = {
+    'LABEL': 'Seleziona anno',
+    'YEAR': [2018, 2019, 2020, 2021, 2022],
+    'KEY': 'year_filter',
+    'HELPER': 'Seleziona un anno dalla lista per filtrare i dati.'
+}
+
+QUARTER_FILTER = {
+    'LABEL': 'Seleziona trimestre',
+    'QUARTER': {
+        2018: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4'],
+        2019: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4'],
+        2020: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4'],
+        2021: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4'],
+        2022: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4'],
+    },
+    'MAPPING': {
+        'Trimestre 1': 1,
+        'Trimestre 2': 2,
+        'Trimestre 3': 3,
+        'Trimestre 4': 4
+    },
+    'KEY': 'quarter_filter',
+    'HELPER': 'Seleziona un trimestre dalla lista per filtrare i dati.'
+}
+
 SEMANTIC_GROUPS = {
+    'LABEL': 'Seleziona gruppo semantico',
     'GROUPS': {
         '-': None,
         'Immigrati': 'immigra',
         'Stranieri': 'stranier',
         'Clandestini': 'clandestin'
     },
+    'KEY': 'semantic_group',
     'HELPER': """Questa selezione permette di filtrare i Tweet che contengono parole relative a uno specifico gruppo semantico. Ad esempio, se si seleziona 'Stranieri', si otterranno tutti i Tweet contenenti le parole 'straniera', 'straniero', 'straniere', 'stranieri'."""
 }
+
+### --- 
 
 SENTIMENT_CLASSES = {
     '-': '#72BF78',
@@ -84,6 +98,7 @@ SENTIMENT_THRESHOLDS = {
 }
 
 SENTIMENT_CLASSES_MAP = {
+    'Total': '-',
     'Strongly Positive': 'Molto Positivi',
     'Positive': 'Positivi',
     'Neutral': 'Neutri',
@@ -99,9 +114,8 @@ TABS = [
 ]
 
 ROLLING_MEAN = {
-    "-": None,
-    "7 Giorni": 7,
-    "30 Giorni": 30
+    "Valori assoluti": None,
+    "Media mobile (7 Giorni)": 7
 }
 
 VOLUME_PLOT = {
@@ -144,7 +158,7 @@ SENTIMENT_PLOT = {
         'A': '#2b9348',
         'B': '#80b918'
     },
-    'HELPER': """L'indice di sentiment quantitativo viene calcolato tramite l'utilizzo di coordinate polari. Il valore giornaliero dell'indice è ottenuto come media pesata delle polarità."""
+    'HELPER': """Il sentiment index viene calcolato tramite l'utilizzo di coordinate polari. Il valore giornaliero dell'indice è ottenuto come media pesata delle polarità."""
 }
 
 QUALITATIVE_PLOT = {
